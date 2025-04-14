@@ -3,7 +3,7 @@ import type { MarkerOptions, Position } from '@/requests/models/markerOptions'
 import { GoogleMap, Marker } from 'vue3-google-map'
 import VesselList from '../components/VesselList.vue'
 import { getVessels } from '@/requests/getVessels'
-import type { Vessel } from '@/requests/models/vessel'
+//import type { Vessel } from '@/requests/models/vessel'
 // import { deleteVessel } from '../requests/deleteVessel'
 // import { getVessel } from '../requests/getVessel'
 // import { getVessels } from '../requests/getVessels'
@@ -30,7 +30,7 @@ for (let i = 0; i < 9; i++) {
   markers.push(mark)
 }
 
-const vList: Vessel[] = await getVessels()
+const vList = await getVessels()
 for (const vessel of vList) {
   const pos: Position = {
     lat: vessel.latitude,
