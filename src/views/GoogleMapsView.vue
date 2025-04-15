@@ -1,37 +1,34 @@
 <script setup lang="ts">
-import type { MarkerOptions, Position } from '@/requests/models/markerOptions'
+import type { MarkerOptions, Position } from '@/models/markerOptions'
 import { GoogleMap, Marker } from 'vue3-google-map'
 import VesselList from '../components/VesselList.vue'
-import { getVessels } from '@/requests/getVessels'
-//import type { Vessel } from '@/requests/models/vessel'
-// import { deleteVessel } from '../requests/deleteVessel'
-// import { getVessel } from '../requests/getVessel'
-// import { getVessels } from '../requests/getVessels'
-// import { postVessel } from '../requests/postVessel'
-// import { putVessel } from '../requests/putVessel'
-// import type { Vessel } from '../requests/models/vessel'
-// import type { MarkerOptions } from '../requests/models/markerOptions'
-const center: Position = {
-  lat: 0,
-  lng: 0,
-}
+import { VesselApi } from '@/api/VesselApi'
+import type { Vessel } from '@/models/Vessel'
+import { ref } from 'vue'
+
+// const center: Position = {
+//   lat: 0,
+//   lng: 0,
+// }
 
 const markers: MarkerOptions[] = []
-for (let i = 0; i < 9; i++) {
-  const pos: Position = {
-    lat: i * 10,
-    lng: i * 10,
-  }
-  const mark: MarkerOptions = {
-    position: pos,
-    label: 'T' + String(i),
-    title: 'Test ' + String(i),
-  }
-  markers.push(mark)
-}
 
-const vList = await getVessels()
-for (const vessel of vList) {
+// for (let i = 0; i < 9; i++) {
+//   const pos: Position = {
+//     lat: i * 10,
+//     lng: i * 10,
+//   }
+//   const mark: MarkerOptions = {
+//     position: pos,
+//     label: 'T' + String(i),
+//     title: 'Test ' + String(i),
+//   }
+//   markers.push(mark)
+// }
+
+const vessels: Vessel[] = await VesselApi.getAll()
+
+vessels.forEach((vessel: Vessel) => {
   const pos: Position = {
     lat: vessel.latitude,
     lng: vessel.longitude,
@@ -42,6 +39,20 @@ for (const vessel of vList) {
     title: vessel.name,
   }
   markers.push(marker)
+})
+
+// let center: Position = {
+//   lat: 0,
+//   lng: 0,
+// }
+
+const center = ref<Position>({ lat: 0, lng: 0 })
+
+if (markers.length) {
+  const first = markers[0]
+  center.value.lat = first.position.lat
+  center.value.lng = first.position.lng
+  console.log(`${center.value}, ${first.position}`)
 }
 </script>
 
@@ -54,5 +65,5 @@ for (const vessel of vList) {
   >
     <Marker v-for="marker in markers" :key="marker.label" :options="marker" />
   </GoogleMap>
-  <VesselList :markers="markers" />
+  <!-- <VesselList :markers="markers" /> -->
 </template>

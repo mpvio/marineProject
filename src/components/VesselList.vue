@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MarkerOptions } from '@/requests/models/markerOptions'
+import type { MarkerOptions } from '@/models/markerOptions'
 import { ref } from 'vue'
 
 // eslint-disable-next-line prefer-const
