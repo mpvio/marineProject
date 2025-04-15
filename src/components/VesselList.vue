@@ -1,83 +1,262 @@
 <script setup lang="ts">
+import { VesselApi } from '@/api/VesselApi'
 import type { MarkerOptions } from '@/models/markerOptions'
+import type { Vessel } from '@/models/Vessel'
 import { ref } from 'vue'
 
-// eslint-disable-next-line prefer-const
-let input = ref('')
+const input = ref('')
+const editingMarkerId = ref<string | null>(null)
+const isCreating = ref(false)
+const editForm = ref({
+  title: '',
+  lat: 0,
+  lng: 0,
+})
 
 const props = defineProps<{
   markers: MarkerOptions[]
 }>()
+
+const emit = defineEmits(['marker-deleted', 'marker-updated', 'marker-created'])
 
 function filteredList() {
   return props.markers.filter((mark) =>
     mark.title.toLowerCase().includes(input.value.toLowerCase()),
   )
 }
+
+async function deleteMarker(mark: MarkerOptions) {
+  await VesselApi.delete(Number(mark.label))
+  emit('marker-deleted')
+}
+
+function startEdit(mark: MarkerOptions) {
+  editingMarkerId.value = mark.label
+  editForm.value = {
+    title: mark.title,
+    lat: mark.position.lat,
+    lng: mark.position.lng,
+  }
+}
+
+function startCreate() {
+  isCreating.value = true
+  editForm.value = {
+    title: '',
+    lat: 0,
+    lng: 0,
+  }
+}
+
+function cancelEdit() {
+  editingMarkerId.value = null
+  isCreating.value = false
+}
+
+async function updateMarker() {
+  if (!editingMarkerId.value) return
+
+  const updatedVessel: Partial<Vessel> = {
+    name: editForm.value.title,
+    latitude: editForm.value.lat,
+    longitude: editForm.value.lng,
+  }
+
+  await VesselApi.update(Number(editingMarkerId.value), updatedVessel)
+  emit('marker-updated')
+  editingMarkerId.value = null
+}
+
+async function createVessel() {
+  const newVessel: Omit<Vessel, 'id'> = {
+    name: editForm.value.title,
+    latitude: editForm.value.lat,
+    longitude: editForm.value.lng,
+  }
+
+  await VesselApi.create(newVessel)
+  emit('marker-created')
+  isCreating.value = false
+}
 </script>
 
 <template>
-  <input type="text" v-model="input" placeholder="Search vessels by name..." />
-  <div class="wrapper" v-if="filteredList().length">
-    <div class="marker item" v-for="mark in filteredList()" :key="mark.label">
-      <p>
-        {{ mark.label }}: {{ mark.title }} at ({{ mark.position.lat }}, {{ mark.position.lng }})
-      </p>
+  <div class="controls">
+    <input type="text" v-model="input" placeholder="Search vessels by name..." />
+    <button @click="startCreate" class="create-btn">Create New Vessel</button>
+  </div>
+
+  <!-- Create Form -->
+  <div class="create-form" v-if="isCreating">
+    <h3>Create New Vessel</h3>
+    <input v-model="editForm.title" placeholder="Vessel name" />
+    <div>
+      Lat: <input type="number" v-model.number="editForm.lat" step="0.000001" /> Lng:
+      <input type="number" v-model.number="editForm.lng" step="0.000001" />
+    </div>
+    <button @click="createVessel">Create</button>
+    <button @click="cancelEdit">Cancel</button>
+  </div>
+
+  <!-- Markers List -->
+  <div class="markers-grid" v-if="filteredList().length">
+    <div class="marker-card" v-for="mark in filteredList()" :key="mark.label">
+      <template v-if="editingMarkerId === mark.label">
+        <div class="edit-form">
+          <h3>Edit Vessel</h3>
+          <input v-model="editForm.title" />
+          <div class="coord-inputs">
+            <div>
+              <label>Lat:</label>
+              <input type="number" v-model.number="editForm.lat" step="0.000001" />
+            </div>
+            <div>
+              <label>Lng:</label>
+              <input type="number" v-model.number="editForm.lng" step="0.000001" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button @click="updateMarker">Save</button>
+            <button @click="cancelEdit">Cancel</button>
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <div class="marker-info">
+          <h4>{{ mark.title }}</h4>
+          <p>ID: {{ mark.label }}</p>
+          <p>Lat: {{ mark.position.lat.toFixed(6) }}</p>
+          <p>Lng: {{ mark.position.lng.toFixed(6) }}</p>
+        </div>
+        <div class="marker-actions">
+          <button @click="startEdit(mark)">Edit</button>
+          <button @click="deleteMarker(mark)">Delete</button>
+        </div>
+      </template>
     </div>
   </div>
-  <div class="error item" v-if="input && !filteredList().length">
-    <p>No results!</p>
+  <div class="error-message" v-if="input && !filteredList().length">
+    <p>No results found!</p>
   </div>
 </template>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
-
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
+<style scoped>
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
 }
 
-/* body {
-  padding: 20px;
-  min-height: 100vh;
-  background-color: rgb(234, 242, 255);
-} */
-
-input {
-  display: block;
-  width: 350px;
-  margin: 20px auto;
-  padding: 10px 45px;
-  background: white url('assets/search-icon.svg') no-repeat 15px center;
-  background-size: 15px 15px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  box-shadow:
-    rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
-    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+input[type='text'] {
+  flex-grow: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
-.item {
-  width: 350px;
-  margin: 0 auto 10px auto;
-  padding: 10px 20px;
+.create-btn {
+  padding: 0.5rem 1rem;
+  background-color: #4caf50;
   color: white;
-  border-radius: 5px;
-  box-shadow:
-    rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
-    rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
-}
-
-.marker {
-  background-color: rgb(97, 62, 252);
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.error {
-  background-color: tomato;
+.create-btn:hover {
+  background-color: #45a049;
+}
+
+.markers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.marker-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.marker-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.marker-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.marker-info p {
+  margin: 0.25rem 0;
+  color: #666;
+}
+
+.marker-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.coord-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.coord-inputs input {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.error-message {
+  text-align: center;
+  padding: 1rem;
+  color: #666;
+}
+
+.create-form {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.create-form h3 {
+  margin-top: 0;
 }
 </style>
