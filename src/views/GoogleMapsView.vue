@@ -11,8 +11,7 @@ import { ref } from 'vue'
 //   lng: 0,
 // }
 
-const markers: MarkerOptions[] = []
-
+const markers = ref<MarkerOptions[]>([])
 // for (let i = 0; i < 9; i++) {
 //   const pos: Position = {
 //     lat: i * 10,
@@ -38,7 +37,7 @@ vessels.forEach((vessel: Vessel) => {
     label: String(vessel.id),
     title: vessel.name,
   }
-  markers.push(marker)
+  markers.value.push(marker)
 })
 
 // let center: Position = {
@@ -48,8 +47,8 @@ vessels.forEach((vessel: Vessel) => {
 
 const center = ref<Position>({ lat: 0, lng: 0 })
 
-if (markers.length) {
-  const first = markers[0]
+if (markers.value.length) {
+  const first = markers.value[0]
   center.value.lat = first.position.lat
   center.value.lng = first.position.lng
   console.log(`${center.value}, ${first.position}`)
@@ -65,5 +64,5 @@ if (markers.length) {
   >
     <Marker v-for="marker in markers" :key="marker.label" :options="marker" />
   </GoogleMap>
-  <!-- <VesselList :markers="markers" /> -->
+  <VesselList :markers="markers" />
 </template>
