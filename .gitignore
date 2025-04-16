@@ -31,3 +31,15 @@ coverage
 
 test-results/
 playwright-report/
+src/components/VesselList (refactored).vue
+src/components/GoogleMapsComponents/CreateVesselDialogue.vue
+src/components/GoogleMapsComponents/EditVesselDialogue.vue
+src/components/GoogleMapsComponents/MapComponent.vue
+src/components/VesselListComponents/VesselCard.vue
+src/components/VesselListComponents/VesselControls.vue
+src/components/VesselListComponents/VesselCreateForm.vue
+src/components/VesselListComponents/VesselEditForm.vue
+src/components/VesselListComponents/VesselListEmpty.vue
+src/views/GoogleMapsView (refactored).vue
+src/modules/useVesselManagement.ts
+src/modules/usePolling.ts

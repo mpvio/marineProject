@@ -2,16 +2,9 @@
 import { VesselApi } from '@/api/VesselApi'
 import type { MarkerOptions } from '@/models/markerOptions'
 import type { Vessel } from '@/models/Vessel'
-import { ref } from 'vue'
+import { constantsForVesselList } from '@/modules/constantsForVesselList'
 
-const input = ref('')
-const editingMarkerId = ref<string | null>(null)
-const isCreating = ref(false)
-const editForm = ref({
-  title: '',
-  lat: 0,
-  lng: 0,
-})
+const { input, editingMarkerId, isCreating, editForm } = constantsForVesselList()
 
 const props = defineProps<{
   markers: MarkerOptions[]

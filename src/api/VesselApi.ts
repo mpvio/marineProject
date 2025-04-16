@@ -75,6 +75,15 @@ export class VesselApi {
     }
   }
 
+  static async getLastUpdate(): Promise<string> {
+    try {
+      const response: AxiosResponse<string> = await axios.get(`${API_BASE_URL}time/`)
+      return response.data
+    } catch (error) {
+      return this.errorHandler(error)
+    }
+  }
+
   private static errorHandler(error: unknown): never {
     if (axios.isAxiosError(error)) {
       const err = error as AxiosError
