@@ -84,7 +84,9 @@ async function createVessel() {
     <h3>Create New Vessel</h3>
     <input v-model="editForm.title" placeholder="Vessel name" />
     <div>
-      Lat: <input type="number" v-model.number="editForm.lat" step="0.000001" /> Lng:
+      <label>Lat:</label>
+      <input type="number" v-model.number="editForm.lat" step="0.000001" />
+      <label>Lng:</label>
       <input type="number" v-model.number="editForm.lng" step="0.000001" />
     </div>
     <button @click="createVessel">Create</button>
@@ -213,6 +215,7 @@ button:hover {
 }
 
 .edit-form {
+  color: black;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -243,6 +246,7 @@ button:hover {
 
 .create-form {
   background-color: #f8f9fa;
+  color: black;
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
