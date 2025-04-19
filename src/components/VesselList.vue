@@ -61,7 +61,7 @@ async function updateMarker() {
 }
 
 async function createVessel() {
-  const newVessel: Omit<Vessel, 'id'> = {
+  const newVessel: Omit<Vessel, 'id' | 'updateTime'> = {
     name: editForm.value.title,
     latitude: editForm.value.lat,
     longitude: editForm.value.lng,

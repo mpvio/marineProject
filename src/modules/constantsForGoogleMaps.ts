@@ -26,7 +26,7 @@ export const constantsForGoogleMaps = () => {
   })
 
   //for checking last update time
-  const lastUpdateTime = ref<string>('')
+  const lastUpdateTime = ref<number>(0)
 
   // Polling interval values
   const POLL_INTERVAL = 10000 // 10 seconds

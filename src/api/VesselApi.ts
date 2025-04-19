@@ -37,7 +37,7 @@ export class VesselApi {
     }
   }
 
-  static async create(vessel: Omit<Vessel, 'id'>): Promise<Vessel> {
+  static async create(vessel: Omit<Vessel, 'id' | 'updateTime'>): Promise<Vessel> {
     try {
       const response: AxiosResponse<Vessel> = await axios.post(
         `${API_BASE_URL}create`,
@@ -71,6 +71,21 @@ export class VesselApi {
       )
       return response.data
     } catch (error) {
+      return this.errorHandler(error)
+    }
+  }
+
+  static async getLatestUpdate(): Promise<number> {
+    try {
+      const response: AxiosResponse<number> = await axios.get(`${API_BASE_URL}latest/`)
+      return response.data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError
+        if (err.response!.status === 404) {
+          return 0
+        }
+      }
       return this.errorHandler(error)
     }
   }
