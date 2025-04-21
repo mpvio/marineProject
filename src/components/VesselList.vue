@@ -41,6 +41,11 @@ function startCreate() {
   }
 }
 
+async function deleteHalf() {
+  await VesselApi.deleteHalf()
+  emit('marker-deleted')
+}
+
 function cancelEdit() {
   editingMarkerId.value = null
   isCreating.value = false
@@ -77,6 +82,7 @@ async function createVessel() {
   <div class="controls">
     <input type="text" v-model="input" placeholder="Search vessels by name..." />
     <button @click="startCreate" class="create-btn">Create New Vessel</button>
+    <button @click="deleteHalf" class="snap-btn">Oh Snap!</button>
   </div>
 
   <!-- Create Form -->
@@ -162,6 +168,20 @@ input[type='text'] {
 
 .create-btn:hover {
   background-color: #45a049;
+}
+
+.snap-btn {
+  padding: 0.5rem 1rem;
+  background-color: #660066;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.snap-btn:hover {
+  background-color: #7f00ff;
 }
 
 .markers-grid {

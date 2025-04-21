@@ -75,6 +75,18 @@ export class VesselApi {
     }
   }
 
+  static async deleteHalf(): Promise<number[]> {
+    try {
+      const response: AxiosResponse<number[]> = await axios.delete(
+        `${API_BASE_URL}deleteHalf/`,
+        CONFIG,
+      )
+      return response.data
+    } catch (error) {
+      return this.errorHandler(error)
+    }
+  }
+
   static async getLatestUpdate(): Promise<number> {
     try {
       const response: AxiosResponse<number> = await axios.get(`${API_BASE_URL}latest/`)
