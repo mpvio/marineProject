@@ -151,18 +151,6 @@ const deleteSelectedMarker = async () => {
   }
 }
 
-const handleMarkerDeleted = async () => {
-  await handleDatabaseEditViaVueCode()
-}
-
-const handleMarkerUpdated = async () => {
-  await handleDatabaseEditViaVueCode()
-}
-
-const handleMarkerCreated = async () => {
-  await handleDatabaseEditViaVueCode()
-}
-
 const handleDatabaseEditViaVueCode = async () => {
   await checkUpdateTime(false)
   await fetchVessels()
@@ -249,12 +237,7 @@ onUnmounted(() => {
 
     <!-- track possible emissions from VesselList -->
     <div class="list-container">
-      <VesselList
-        :markers="markers"
-        @marker-deleted="handleMarkerDeleted"
-        @marker-updated="handleMarkerUpdated"
-        @marker-created="handleMarkerCreated"
-      />
+      <VesselList :markers="markers" @marker-changed="handleDatabaseEditViaVueCode" />
     </div>
   </div>
 </template>

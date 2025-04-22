@@ -2,7 +2,7 @@ import { ref } from 'vue'
 
 export const constantsForVesselList = () => {
   const input = ref('')
-  const editingMarkerId = ref<string | null>(null)
+  const idOfMarkerBeingEdited = ref<string | null>(null)
   const isCreating = ref(false)
   const editForm = ref({
     title: '',
@@ -11,7 +11,7 @@ export const constantsForVesselList = () => {
   })
   return {
     input,
-    editingMarkerId,
+    idOfMarkerBeingEdited,
     isCreating,
     editForm,
   }

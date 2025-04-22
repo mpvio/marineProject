@@ -29,7 +29,7 @@ export const constantsForGoogleMaps = () => {
   const lastUpdateTime = ref<number>(0)
 
   // Polling interval values
-  const POLL_INTERVAL = 10000 // 10 seconds
+  const POLL_INTERVAL = 5000 // 5 seconds
 
   return {
     markers,

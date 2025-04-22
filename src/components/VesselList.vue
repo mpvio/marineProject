@@ -4,13 +4,13 @@ import type { MarkerOptions } from '@/models/markerOptions'
 import type { Vessel } from '@/models/Vessel'
 import { constantsForVesselList } from '@/modules/constantsForVesselList'
 
-const { input, editingMarkerId, isCreating, editForm } = constantsForVesselList()
+const { input, idOfMarkerBeingEdited, isCreating, editForm } = constantsForVesselList()
 
 const props = defineProps<{
   markers: MarkerOptions[]
 }>()
 
-const emit = defineEmits(['marker-deleted', 'marker-updated', 'marker-created'])
+const emit = defineEmits(['marker-changed'])
 
 function filteredList() {
   return props.markers.filter((mark) =>
@@ -20,11 +20,11 @@ function filteredList() {
 
 async function deleteMarker(mark: MarkerOptions) {
   await VesselApi.delete(Number(mark.label))
-  emit('marker-deleted')
+  emit('marker-changed')
 }
 
 function startEdit(mark: MarkerOptions) {
-  editingMarkerId.value = mark.label
+  idOfMarkerBeingEdited.value = mark.label
   editForm.value = {
     title: mark.title,
     lat: mark.position.lat,
@@ -43,16 +43,16 @@ function startCreate() {
 
 async function deleteHalf() {
   await VesselApi.deleteHalf()
-  emit('marker-deleted')
+  emit('marker-changed')
 }
 
 function cancelEdit() {
-  editingMarkerId.value = null
+  idOfMarkerBeingEdited.value = null
   isCreating.value = false
 }
 
 async function updateMarker() {
-  if (!editingMarkerId.value) return
+  if (!idOfMarkerBeingEdited.value) return
 
   const updatedVessel: Partial<Vessel> = {
     name: editForm.value.title,
@@ -60,9 +60,9 @@ async function updateMarker() {
     longitude: editForm.value.lng,
   }
 
-  await VesselApi.update(Number(editingMarkerId.value), updatedVessel)
-  emit('marker-updated')
-  editingMarkerId.value = null
+  await VesselApi.update(Number(idOfMarkerBeingEdited.value), updatedVessel)
+  emit('marker-changed')
+  idOfMarkerBeingEdited.value = null
 }
 
 async function createVessel() {
@@ -73,7 +73,7 @@ async function createVessel() {
   }
 
   await VesselApi.create(newVessel)
-  emit('marker-created')
+  emit('marker-changed')
   isCreating.value = false
 }
 </script>
@@ -102,7 +102,7 @@ async function createVessel() {
   <!-- Markers List -->
   <div class="markers-grid" v-if="filteredList().length">
     <div class="marker-card" v-for="mark in filteredList()" :key="mark.label">
-      <template v-if="editingMarkerId === mark.label">
+      <template v-if="idOfMarkerBeingEdited === mark.label">
         <div class="edit-form">
           <h3>Edit Vessel</h3>
           <input v-model="editForm.title" />
