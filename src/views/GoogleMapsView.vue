@@ -228,7 +228,6 @@ onUnmounted(() => {
         <div class="dialogue-actions">
           <button @click="deleteSelectedMarker" class="delete-btn">Delete</button>
           <!-- Separate delete button from update options -->
-          <div class="action-spacer"></div>
           <button @click="updateSelectedMarker" class="good-btn">Save</button>
           <button @click="selectedMarker = null">Cancel</button>
         </div>
