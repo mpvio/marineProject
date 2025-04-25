@@ -43,3 +43,4 @@ src/components/VesselListComponents/VesselListEmpty.vue
 src/views/GoogleMapsView (refactored).vue
 src/modules/useVesselManagement.ts
 src/modules/usePolling.ts
+src/api/googleApiKey.txt
