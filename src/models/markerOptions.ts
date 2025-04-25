@@ -9,4 +9,4 @@ interface MarkerOptions {
   title: string
 }
 
-export type { MarkerOptions, Position }
+export type { MarkerOptions, Position } //

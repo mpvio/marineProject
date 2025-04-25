@@ -100,7 +100,7 @@ export class VesselApi {
       }
       return this.errorHandler(error)
     }
-  }
+  } //
 
   private static errorHandler(error: unknown): never {
     if (axios.isAxiosError(error)) {

@@ -30,7 +30,7 @@ const startPolling = () => {
 }
 
 //when update is true, the function is being called via polling
-//else, lastUpdateTime is being manually called when editing db in Vue itself
+//else, lastUpdateTime is being manually called when editing db in Vue itself//
 const checkUpdateTime = async (update: boolean) => {
   try {
     const timestamp = await VesselApi.getLatestUpdate()

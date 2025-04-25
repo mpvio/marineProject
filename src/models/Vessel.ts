@@ -4,4 +4,4 @@ export interface Vessel {
   latitude: number
   longitude: number
   updateTime: number
-}
+} //
